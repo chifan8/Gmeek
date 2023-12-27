@@ -12,6 +12,7 @@ from github import Github
 from xpinyin import Pinyin
 from feedgen.feed import FeedGenerator
 from jinja2 import Environment, FileSystemLoader
+from lxml import etree
 ######################################################################################
 i18n={"Search":"Search","switchTheme":"switch theme","link":"link","home":"home","comments":"comments","run":"run ","days":" days","Previous":"Previous","Next":"Next"}
 i18nCN={"Search":"搜索","switchTheme":"切换主题","link":"友情链接","home":"首页","comments":"评论","run":"网站运行","days":"天","Previous":"上一页","Next":"下一页"}
@@ -121,6 +122,16 @@ class GMEEK():
         print("create postPage title=%s file=%s " % (issue["postTitle"],issue["htmlDir"]))
 
     def createPlistHtml(self):
+        avg_resp = requests.get(self.blogBase["avatarUrl"])
+        avg_root = etree.fromstring(avg_resp.text)
+        paths = avg_root.findall('.//{http://www.w3.org/2000/svg}path')
+        for path in paths:
+            path.attrib['class'] = 'icon-path'
+            path.attrib['stroke'] = '#1296db'
+            path.attrib['stroke-width'] = '3'
+        modified_svg_content = etree.tostring(avg_root, encoding='unicode', method='xml')
+        self.blogBase["avatarContent"]=modified_svg_content
+        
         self.blogBase["postListJson"]=dict(sorted(self.blogBase["postListJson"].items(),key=lambda x:(x[1]["top"],x[1]["createdAt"]),reverse=True))#使列表由时间排序
 
         postNum=len(self.blogBase["postListJson"])
