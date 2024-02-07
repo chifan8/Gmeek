@@ -62,7 +62,7 @@ class GMEEK():
         os.mkdir(self.post_dir)
 
     def defaultConfig(self):
-        dconfig={"startSite":"","filingNum":"","onePageListNum":15,"commentLabelColor":"#006b75","yearColorList":["#bc4c00", "#0969da", "#1f883d", "#A333D0"],"i18n":"CN","dayTheme":"light","nightTheme":"dark","urlMode":"pinyin","script":"","style":""}
+        dconfig={"startSite":"","filingNum":"","onePageListNum":15,"commentLabelColor":"#006b75","yearColorList":["#bc4c00", "#0969da", "#1f883d", "#A333D0"],"i18n":"CN","dayTheme":"light","nightTheme":"dark","urlMode":"pinyin","script":"","style":"","bottomText":"","showPostSource":1}
         config=json.loads(open('config.json', 'r', encoding='utf-8').read())
         self.blogBase={**dconfig,**config}.copy()
         self.blogBase["postListJson"]=json.loads('{}')
@@ -117,6 +117,9 @@ class GMEEK():
             postBase["highlight"]=1
         else:
             postBase["highlight"]=0
+        
+        if issue["label"] in self.blogBase["singlePage"]:
+            postBase["bottomText"]=''
 
         self.renderHtml('post.html',postBase,{},issue["htmlDir"])
         print("create postPage title=%s file=%s " % (issue["postTitle"],issue["htmlDir"]))
@@ -195,10 +198,10 @@ class GMEEK():
 
         for num in self.blogBase["singeListJson"]:
             item=feed.add_item()
-            item.guid(self.blogBase["homeUrl"]+"/"+self.blogBase["singeListJson"][num]["postUrl"],permalink=True)
+            item.guid(self.blogBase["homeUrl"]+"/"+self.blogBase["singeListJson"][num]["label"]+".html",permalink=True)
             item.title(self.blogBase["singeListJson"][num]["postTitle"])
             item.description(self.blogBase["singeListJson"][num]["description"])
-            item.link(href=self.blogBase["homeUrl"]+"/"+self.blogBase["singeListJson"][num]["postUrl"])
+            item.link(href=self.blogBase["homeUrl"]+"/"+self.blogBase["singeListJson"][num]["label"]+".html")
             item.pubDate(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(self.blogBase["singeListJson"][num]["createdAt"])))
 
         for num in self.blogBase["postListJson"]:
@@ -232,7 +235,7 @@ class GMEEK():
         if len(issue.labels)==1:
             if issue.labels[0].name in self.blogBase["singlePage"]:
                 listJsonName='singeListJson'
-                gen_Html = 'docs/{}.html'.format(issue.labels[0].name)
+                gen_Html = self.root_dir+'{}.html'.format(issue.labels[0].name)
             else:
                 listJsonName='postListJson'
                 if self.blogBase["urlMode"]=="issue":

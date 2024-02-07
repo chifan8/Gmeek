@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
+<meta name="description" content="{{ blogBase['postTitle'] }}">
 <title>{{ blogBase['postTitle'] }}</title>
 {% if blogBase['highlight']==1 %}<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />{% endif %}
 {% endblock %}
@@ -24,20 +25,22 @@
 
 {% endblock %}
 {% block header %}
-<span class="postTitle">{{ blogBase['postTitle'] }}</span>
+<h1 class="postTitle">{{ blogBase['postTitle'] }}</h1>
 <div class="title-right">
-
+    
     <a href="{{ blogBase['homeUrl'] }}"><button id="buttonHome" class="btn btn-invisible circle" title="{{ i18n['home'] }}">
         <svg class="octicon" width="16" height="16">
             <path id="pathHome" fill-rule="evenodd" d="{{ IconList['home'] }}"></path>
         </svg>
     </button></a>
 
+    {% if blogBase['showPostSource']==1 %}
     <a href="{{ blogBase['postSourceUrl'] }}" target="_blank"><button class="btn btn-invisible circle" title="Issue">
         <svg class="octicon" width="16" height="16">
             <path id="pathIssue" fill-rule="evenodd" d="{{ IconList['github'] }}"></path>
         </svg>
     </button></a>
+    {% endif %}
 
     <button class="btn btn-invisible circle" onclick="modeSwitch();" title="{{ i18n['switchTheme'] }}">
         <svg class="octicon" width="16" height="16" >
@@ -49,9 +52,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="markdown-body" id="postBody">
-{{ blogBase['postBody'] }}
-</div>
+<div class="markdown-body" id="postBody">{{ blogBase['postBody'] }}</div>
+<div style="font-size:small;margin-top:8px;float:right;">{{ blogBase['bottomText'] }}</div>
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">{{ i18n['comments'] }}</button>
 <div class="comments" id="comments"></div>
 {% endblock %}
